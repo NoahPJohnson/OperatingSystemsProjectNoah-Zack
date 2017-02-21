@@ -13,7 +13,7 @@ map
 |
 disk
 
-* google all about VDI's Zack was here
+* google all about VDI's 
 	-Image signature = magic number
 	-offset block (tells you where map is) and offset data
 
