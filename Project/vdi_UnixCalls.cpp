@@ -1,5 +1,6 @@
 /**
-Noah Johnson
+ * Noah Johnson
+ * Zack While
 Step 0, Unix System calls for vdi files
 
 * make it a class.
@@ -13,7 +14,7 @@ map
 |
 disk
 
-* google all about VDI's 
+* google all about VDI's  
 	-Image signature = magic number
 	-offset block (tells you where map is) and offset data
 
