@@ -5,16 +5,19 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int vdi_open(const char pathname*);
+int vdi_open(const char *pathname);
 
-int vdi_close(int fd);
+int vdi_close();
 
-ssize_t vdi_read(int fd, void *buf, size_t count);
+ssize_t vdi_read(/*int fd,*/ void *buf, size_t count);
 
 ssize_t vdi_write(int fd, const void *buf, size_t count);
 
-off_t vdi_lseek(int fildes, off_t offset, int whence);
+off_t vdi_lseek(off_t offset, int whence);
+
+void setHeader();
 
 void translate();
+
 
 #endif
