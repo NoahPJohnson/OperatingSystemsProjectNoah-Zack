@@ -71,6 +71,11 @@ struct vdiHeader
 {
     char name[64];
     unsigned int magicNumber;
+    unsigned int version;
+    unsigned int headerSize;
+    unsigned int imageType;
+    unsigned int imageFlags;
+    char imageDescription[32];
     unsigned int offsetBlocks; //how far into file the map is
     unsigned int offsetData;   //first page frame location
     unsigned int blockSize;    //page size
@@ -106,15 +111,22 @@ int main()
     
     //cout << "FILE CONTENTS:  " << fs.read(); 
     //fs.close();
-    char data[2560];
+    //char data[256];
 
     vdiFile testFile;    
-
+    vdiHeader header;
     testFile.vdi_open("/home/csis/Downloads/Good/Test-fixed-1k.vdi");
-    testFile.vdi_lseek(5, SEEK_SET);
-    testFile.vdi_read(data, 1920);
+    //testFile.vdi_lseek(0, SEEK_SET);
+    testFile.vdi_read(&header, 136);
     testFile.vdi_close();
-    cout << data << endl;
+    cout << header.name << endl;
+    cout << header.magicNumber << endl;
+    cout << header.version << endl;
+    cout << header.headerSize << endl;
+    cout << header.imageType << endl;
+    cout << header.imageFlags << endl;
+    cout << header.imageDescription << endl;
+    cout << header.offsetBlocks << endl;
     return 0;
 }
 
@@ -165,7 +177,7 @@ off_t vdiFile::vdi_lseek(off_t offset, int whence)
 
 void vdiFile::setHeader()
 {
-    header.offsetBlocks = 0;
+    //header.offsetBlocks = 0;
 }
 
 void vdiFile::translate()
