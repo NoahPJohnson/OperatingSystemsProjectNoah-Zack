@@ -69,19 +69,28 @@ using namespace std;
 //VDI Header
 struct vdiHeader
 {
+    //int headerStructSize = 164;
     char name[64];
-    unsigned int magicNumber;
-    unsigned int version;
-    unsigned int headerSize;
+    unsigned int magicNumber;  //Image Signature
+    unsigned int version;      
+    unsigned int headerSize;   //
     unsigned int imageType;
     unsigned int imageFlags;
-    char imageDescription[32];
+    char imageDescription[32]; //
     unsigned int offsetBlocks; //how far into file the map is
     unsigned int offsetData;   //first page frame location
-    unsigned int blockSize;    //page size
+    unsigned int Cylinders;
+    unsigned int Heads;
+    unsigned int Sectors;      //
+    unsigned int sectorSize;   //
+    unsigned int unused;
     unsigned int diskSize;     //total size of virtual drive
-    unsigned short int majorVersion;
-    unsigned short int minorVersion;
+    unsigned int blockSize;    //page size
+    unsigned int blockExtraData;
+    unsigned int blocksInHDD;
+    unsigned int blocksAllocated;
+    //unsigned short int majorVersion;
+    //unsigned short int minorVersion;
     
     //Ignore UUID's   
 };
@@ -89,11 +98,13 @@ struct vdiHeader
 class vdiFile
 {
     int fd;
+    int *map;
     int cursor;
-    vdiHeader header;
+    
     
     
     public:
+        vdiHeader header;
         int vdi_open(const char*);
         void vdi_close();
         ssize_t vdi_read(/*int,*/ void*, size_t);
@@ -114,36 +125,45 @@ int main()
     //char data[256];
 
     vdiFile testFile;    
-    vdiHeader header;
+    //vdiHeader header;
     testFile.vdi_open("/home/csis/Downloads/Good/Test-fixed-1k.vdi");
     //testFile.vdi_lseek(0, SEEK_SET);
-    testFile.vdi_read(&header, 136);
-    testFile.vdi_close();
-    cout << header.name << endl;
-    cout << header.magicNumber << endl;
-    cout << header.version << endl;
-    cout << header.headerSize << endl;
-    cout << header.imageType << endl;
-    cout << header.imageFlags << endl;
-    cout << header.imageDescription << endl;
-    cout << header.offsetBlocks << endl;
+    //testFile.vdi_read(&header, 164);
+    //testFile.vdi_close();
+    cout << "Name: " << testFile.header.name << endl;
+    cout << testFile.header.magicNumber << endl;
+    cout << testFile.header.headerSize << endl;
+    cout << testFile.header.imageDescription << endl;
+    cout << testFile.header.offsetBlocks << endl;
+    cout << testFile.header.offsetData << endl;
+    cout << testFile.header.Sectors << endl;
+    cout << testFile.header.sectorSize << endl;
+    cout << testFile.header.diskSize << endl;
+    cout << testFile.header.blockSize << endl;
+    cout << testFile.header.blocksInHDD << endl;
+
+    
     return 0;
 }
 
 int vdiFile::vdi_open(const char *pathname)
 {
-    //int fd;
-    //int cursor;
     fd = open(pathname, O_RDONLY);
-    cout << fd << endl;
+    //cout << fd << endl;
     if (fd < 0)
     {
         return 1;
     }
-    // read header
-    //read(fd, )    
-    //read map
-    
+    //read header
+    read(fd, &header, 164);  
+    map = new int[header.blocksInHDD];
+    lseek(fd, header.offsetBlocks, SEEK_SET);
+    read(fd, &map, 4*header.blocksInHDD);
+    for (int i=0; i < header.blocksInHDD; i ++)
+        {
+         cout << "Map: " << i << " = " << map[i] << endl;
+        }
+    //cout << "Name2: " << header.name << endl;
     cursor = 0;
     return 0;
 }
@@ -185,9 +205,11 @@ void vdiFile::translate()
     int vdiPageSize;
     int pageNumber;
     int offset;
+    int frame;
+    int loc;
     //int[] map;
-    //map = int[vdiPageSize];
-    //cursor / vdiPageSize = pageNumber;
-    //cursor % vdiPageSize = offset;
-    //map[pageNumber] * vdiPageSize + offset;   
+    int map[header.blockSize];
+    pageNumber = cursor / header.blockSize;
+    offset = cursor % vdiPageSize;
+    loc = map[pageNumber] * vdiPageSize + offset;   
 }
